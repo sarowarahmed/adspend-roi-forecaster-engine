@@ -12,4 +12,23 @@ An app powered by a Machine Learning model, to forecast sales based on TV, Newsp
 ├── app.py              # Main Streamlit Entrypoint
 ├── Dockerfile          # Containerization
 └── README.md           # The "Sales Pitch" for your project
+
+/app
+   app.py
+   pages/
+      optimizer.py
+      model_health.py
+
+/src
+   data_generator.py
+   train.py
+   optimize.py
+   validate.py
+
+/models
+   pipeline.pkl
+   surrogate_model.pkl
+
+/mlruns
+/tests
 ```
