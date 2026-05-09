@@ -1,14 +1,17 @@
 # src/train.py
 
+import os
 import pandas as pd
 import numpy as np
 import joblib
+import mlflow
+import mlflow.sklearn
+
 from src.features import engineer_features
 
 from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.linear_model import Ridge
 
 from xgboost import XGBRegressor
@@ -81,16 +84,21 @@ def build_ridge_pipeline():
 # 3. Cross Validation
 # -------------------------------
 def evaluate_model(pipeline, X, y):
+
     tscv = TimeSeriesSplit(n_splits=5)
 
     r2_scores = cross_val_score(
-        pipeline, X, y,
+        pipeline,
+        X,
+        y,
         cv=tscv,
         scoring="r2"
     )
 
     mae_scores = -cross_val_score(
-        pipeline, X, y,
+        pipeline,
+        X,
+        y,
         cv=tscv,
         scoring="neg_mean_absolute_error"
     )
@@ -106,6 +114,7 @@ def evaluate_model(pipeline, X, y):
 # 4. Train Final Models
 # -------------------------------
 def train_final_models(X, y):
+
     xgb_pipeline = build_xgb_pipeline()
     ridge_pipeline = build_ridge_pipeline()
 
@@ -119,6 +128,7 @@ def train_final_models(X, y):
 # 5. Residual Analysis
 # -------------------------------
 def residual_analysis(model, X, y):
+
     preds = model.predict(X)
     residuals = y - preds
 
@@ -132,44 +142,113 @@ def residual_analysis(model, X, y):
 # 6. Save Artifacts
 # -------------------------------
 def save_artifacts(xgb_model, ridge_model):
+
+    os.makedirs("models", exist_ok=True)
+
     joblib.dump(xgb_model, "models/xgb_pipeline.pkl")
     joblib.dump(ridge_model, "models/ridge_pipeline.pkl")
 
 
 # -------------------------------
-# 7. Main Execution
+# 7. Save Metadata
+# -------------------------------
+def save_metadata(feature_cols):
+
+    metadata = {
+        "feature_names": feature_cols
+    }
+
+    joblib.dump(metadata, "models/metadata.pkl")
+
+
+# -------------------------------
+# 8. Main Training Pipeline
 # -------------------------------
 def run_training(data_path):
+
     df = load_data(data_path)
+
     X, y, feature_cols = feature_target_split(df)
 
-    print("📊 Evaluating XGBoost...")
-    xgb_metrics = evaluate_model(build_xgb_pipeline(), X, y)
+    with mlflow.start_run():
 
-    print("📊 Evaluating Ridge...")
-    ridge_metrics = evaluate_model(build_ridge_pipeline(), X, y)
+        print("📊 Evaluating XGBoost...")
+        xgb_metrics = evaluate_model(
+            build_xgb_pipeline(),
+            X,
+            y
+        )
 
-    print("\n--- Cross Validation Results ---")
-    print("XGB:", xgb_metrics)
-    print("Ridge:", ridge_metrics)
+        print("📊 Evaluating Ridge...")
+        ridge_metrics = evaluate_model(
+            build_ridge_pipeline(),
+            X,
+            y
+        )
 
-    print("\n🚀 Training final models...")
-    xgb_model, ridge_model = train_final_models(X, y)
+        # -----------------------
+        # Log Metrics
+        # -----------------------
+        mlflow.log_metric(
+            "xgb_r2_mean",
+            xgb_metrics["r2_mean"]
+        )
 
-    print("📉 Running residual analysis...")
-    residuals_info = residual_analysis(xgb_model, X, y)
+        mlflow.log_metric(
+            "xgb_mae_mean",
+            xgb_metrics["mae_mean"]
+        )
 
-    save_artifacts(xgb_model, ridge_model)
-    save_metadata(feature_cols)
+        mlflow.log_metric(
+            "ridge_r2_mean",
+            ridge_metrics["r2_mean"]
+        )
 
-    print("✅ Models saved to /models")
+        mlflow.log_metric(
+            "ridge_mae_mean",
+            ridge_metrics["mae_mean"]
+        )
 
-    def save_metadata(feature_cols):
-        metadata = {
-            "feature_names": feature_cols
-        }
+        print("\n--- Cross Validation Results ---")
+        print("XGB:", xgb_metrics)
+        print("Ridge:", ridge_metrics)
 
-        joblib.dump(metadata, "models/metadata.pkl")
+        print("\n🚀 Training final models...")
+
+        xgb_model, ridge_model = train_final_models(X, y)
+
+        print("📉 Running residual analysis...")
+
+        residuals_info = residual_analysis(
+            xgb_model,
+            X,
+            y
+        )
+
+        # -----------------------
+        # Save Models
+        # -----------------------
+        save_artifacts(
+            xgb_model,
+            ridge_model
+        )
+
+        save_metadata(feature_cols)
+
+        # -----------------------
+        # Log Models
+        # -----------------------
+        mlflow.sklearn.log_model(
+            xgb_model,
+            "xgb_model"
+        )
+
+        mlflow.sklearn.log_model(
+            ridge_model,
+            "ridge_model"
+        )
+
+        print("✅ Models saved to /models")
 
     return {
         "xgb_metrics": xgb_metrics,
@@ -179,4 +258,7 @@ def run_training(data_path):
 
 
 if __name__ == "__main__":
-    results = run_training("data/marketing_data.csv")
+
+    results = run_training(
+        "data/marketing_data.csv"
+    )
