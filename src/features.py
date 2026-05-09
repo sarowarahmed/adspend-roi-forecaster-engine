@@ -1,0 +1,53 @@
+# src/features.py
+
+import pandas as pd
+import numpy as np
+
+
+# -------------------------------
+# Adstock Transformation
+# -------------------------------
+def adstock(series, decay=0.5):
+    result = np.zeros(len(series))
+
+    for i in range(len(series)):
+        if i == 0:
+            result[i] = series.iloc[i]
+        else:
+            result[i] = series.iloc[i] + decay * result[i - 1]
+
+    return result
+
+
+# -------------------------------
+# Saturation Transformation
+# -------------------------------
+def saturation(x, alpha=0.01):
+    return 1 / (1 + np.exp(-alpha * x))
+
+
+# -------------------------------
+# Feature Engineering Pipeline
+# -------------------------------
+def engineer_features(df):
+
+    # Adstock Features
+    df["TV_Adstock"] = adstock(df["TV"], decay=0.6)
+    df["Social_Adstock"] = adstock(df["Social"], decay=0.4)
+    df["News_Adstock"] = adstock(df["Newspaper"], decay=0.2)
+
+    # Saturation Features
+    df["TV_Saturation"] = saturation(df["TV_Adstock"])
+    df["Social_Saturation"] = saturation(df["Social_Adstock"])
+    df["News_Saturation"] = saturation(df["News_Adstock"])
+
+    # Interaction Feature
+    df["TV_Social_Interaction"] = (
+        df["TV"] * df["Social"]
+    )
+
+    # Time-Based Features
+    df["Month"] = pd.to_datetime(df["Date"]).dt.month
+    df["Quarter"] = pd.to_datetime(df["Date"]).dt.quarter
+
+    return df

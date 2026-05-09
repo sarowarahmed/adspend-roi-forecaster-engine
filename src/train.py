@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+from src.features import engineer_features
 
 from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 from sklearn.pipeline import Pipeline
@@ -24,10 +25,32 @@ def load_data(path):
 
 
 def feature_target_split(df):
-    X = df[["TV", "Social", "Newspaper"]]
+
+    df = engineer_features(df)
+
+    feature_cols = [
+        "TV",
+        "Social",
+        "Newspaper",
+
+        "TV_Adstock",
+        "Social_Adstock",
+        "News_Adstock",
+
+        "TV_Saturation",
+        "Social_Saturation",
+        "News_Saturation",
+
+        "TV_Social_Interaction",
+
+        "Month",
+        "Quarter"
+    ]
+
+    X = df[feature_cols]
     y = df["Sales"]
 
-    return X, y
+    return X, y, feature_cols
 
 
 # -------------------------------
