@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# MLflow
+mlruns/
+
+# Model Artifacts
+models/*.pkl
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Environment Variables
+.env
+
+# Streamlit Cache
+.streamlit/
+
+# Logs
+*.log
+
+# Data Files (optional)
+data/*.csv
+
+# Testing
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+
+# Build
+dist/
+build/
+*.egg-info/
