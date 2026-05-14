@@ -36,10 +36,6 @@ def engineer_features(df):
     df["Social_Adstock"] = adstock(df["Social"], decay=0.4)
     df["News_Adstock"] = adstock(df["Newspaper"], decay=0.2)
 
-    # Saturation Features
-    df["TV_Saturation"] = saturation(df["TV_Adstock"])
-    df["Social_Saturation"] = saturation(df["Social_Adstock"])
-    df["News_Saturation"] = saturation(df["News_Adstock"])
 
     # Interaction Feature
     df["TV_Social_Interaction"] = (
@@ -48,6 +44,7 @@ def engineer_features(df):
 
     # Time-Based Features
     df["Month"] = pd.to_datetime(df["Date"]).dt.month
-    df["Quarter"] = pd.to_datetime(df["Date"]).dt.quarter
+    #df["Quarter"] = pd.to_datetime(df["Date"]).dt.quarter
+    df["Time_Index"] = np.arange(len(df))
 
     return df

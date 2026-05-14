@@ -42,7 +42,8 @@ def feature_target_split(df):
 
         "TV_Social_Interaction",
 
-        "Month"
+        "Month",
+        "Time_Index"
     ]
 
     X = df[feature_cols]
