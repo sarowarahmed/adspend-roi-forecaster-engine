@@ -40,14 +40,9 @@ def feature_target_split(df):
         "Social_Adstock",
         "News_Adstock",
 
-        "TV_Saturation",
-        "Social_Saturation",
-        "News_Saturation",
-
         "TV_Social_Interaction",
 
-        "Month",
-        "Quarter"
+        "Month"
     ]
 
     X = df[feature_cols]
