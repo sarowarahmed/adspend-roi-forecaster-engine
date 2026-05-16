@@ -99,7 +99,7 @@ print(
 # -------------------------------
 # SHAP Waterfall Plot
 # -------------------------------
-sample_index = 0
+sample_index = 4500
 
 explanation = shap.Explanation(
     values=shap_values[sample_index],
