@@ -59,12 +59,14 @@ def build_xgb_pipeline():
     return Pipeline([
         ("scaler", StandardScaler()),
         ("model", XGBRegressor(
-            n_estimators=300,
-            max_depth=5,
-            learning_rate=0.05,
+            n_estimators=500,
+            max_depth=3,
+            learning_rate=0.03,
+            min_child_weight=5,
             subsample=0.8,
             colsample_bytree=0.8,
-            random_state=42
+            reg_alpha=0.5,
+            reg_lambda=1.0,
         ))
     ])
 
