@@ -2,9 +2,8 @@
 
 import streamlit as st
 import pandas as pd
-import joblib
-import mlflow
 import plotly.express as px
+import joblib
 
 from src.optimize import (
     optimize_budget,
@@ -20,13 +19,76 @@ from src.features import engineer_features
 # -----------------------------------
 st.set_page_config(
     page_title="AdSpend ROI Forecaster Engine",
-    page_icon="📈",
-    layout="wide"
+    page_icon="🚀",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 
 # -----------------------------------
-# Load Models + Metadata
+# Custom CSS
+# -----------------------------------
+st.markdown(
+    """
+<style>
+
+.main {
+    background-color: #0E1117;
+}
+
+.hero-box {
+    padding: 2rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #111827, #1F2937);
+    border: 1px solid #374151;
+    margin-bottom: 1rem;
+}
+
+.metric-container {
+    background-color: #161B22;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid #30363D;
+}
+
+.small-text {
+    color: #9CA3AF;
+}
+
+</style>
+""",
+    unsafe_allow_html=True
+)
+
+
+# -----------------------------------
+# Sidebar Branding
+# -----------------------------------
+st.sidebar.image(
+    "https://cdn-icons-png.flaticon.com/512/2920/2920329.png",
+    width=90
+)
+
+st.sidebar.title(
+    "AdSpend Intelligence"
+)
+
+st.sidebar.markdown(
+    """
+### 🚀 AI Marketing Platform
+
+Capabilities:
+- Budget Optimization
+- Explainable AI
+- Drift Monitoring
+- Retraining Pipelines
+- Time-Series ML
+"""
+)
+
+
+# -----------------------------------
+# Load Models
 # -----------------------------------
 metadata = joblib.load(
     "models/metadata.pkl"
@@ -48,20 +110,32 @@ df = load_data(
     "data/marketing_data.csv"
 )
 
-feature_df = engineer_features(df.copy())
+feature_df = engineer_features(
+    df.copy()
+)
 
 
 # -----------------------------------
-# Sidebar
+# Sidebar Controls
 # -----------------------------------
-st.sidebar.title("⚙️ Control Panel")
+st.sidebar.header("⚙️ Scenario Simulator")
 
 budget = st.sidebar.slider(
-    "Marketing Budget",
+    "Total Marketing Budget",
     min_value=1000,
     max_value=50000,
     value=10000,
     step=500
+)
+
+market_condition = st.sidebar.selectbox(
+    "Market Scenario",
+    [
+        "Stable Market",
+        "Holiday Surge",
+        "Social Media Boom",
+        "Economic Slowdown"
+    ]
 )
 
 show_raw_data = st.sidebar.checkbox(
@@ -70,218 +144,253 @@ show_raw_data = st.sidebar.checkbox(
 
 
 # -----------------------------------
-# Header
+# Scenario Simulation
 # -----------------------------------
-st.title("📈 AdSpend ROI Forecaster Engine")
+scenario_multiplier = 1.0
 
+if market_condition == "Holiday Surge":
+    scenario_multiplier = 1.15
+
+elif market_condition == "Social Media Boom":
+    scenario_multiplier = 1.25
+
+elif market_condition == "Economic Slowdown":
+    scenario_multiplier = 0.85
+
+
+# -----------------------------------
+# Hero Section
+# -----------------------------------
 st.markdown(
-    """
-### AI-Powered Marketing Mix Optimization Platform
+    f"""
+<div class="hero-box">
 
-This platform demonstrates:
-- Budget Optimization using Scipy
-- Explainable AI with SHAP
-- Time-Series Aware ML Validation
-- Marketing Mix Modeling Concepts
-- MLflow Experiment Tracking
-"""
+# 🚀 AdSpend ROI Forecaster Engine
+
+### AI-Powered Marketing Optimization Platform
+
+<p class="small-text">
+Built using:
+
+• Scipy Optimization
+• SHAP Explainability
+• Time-Series Validation
+• Drift Monitoring
+• MLflow Tracking
+• Retraining Workflows
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
 )
 
 
 # -----------------------------------
 # KPI Metrics
 # -----------------------------------
-latest_sales = round(df["Sales"].iloc[-1], 2)
+latest_sales = round(
+    df["Sales"].iloc[-1]
+    * scenario_multiplier,
+    2
+)
 
-avg_sales = round(df["Sales"].mean(), 2)
+avg_sales = round(
+    df["Sales"].mean(),
+    2
+)
 
-avg_tv = round(df["TV"].mean(), 2)
+avg_tv = round(
+    df["TV"].mean(),
+    2
+)
 
-avg_social = round(df["Social"].mean(), 2)
+avg_social = round(
+    df["Social"].mean(),
+    2
+)
 
-col1, col2, col3, col4 = st.columns(4)
+metric1, metric2, metric3, metric4 = st.columns(4)
 
-with col1:
-    st.metric(
-        "Latest Sales",
-        latest_sales
+metric1.metric(
+    "📈 Latest Sales",
+    latest_sales
+)
+
+metric2.metric(
+    "💰 Avg Sales",
+    avg_sales
+)
+
+metric3.metric(
+    "📺 Avg TV Spend",
+    avg_tv
+)
+
+metric4.metric(
+    "📱 Avg Social Spend",
+    avg_social
+)
+
+
+# -----------------------------------
+# Tabs Layout
+# -----------------------------------
+analytics_tab, optimizer_tab, explain_tab = st.tabs([
+    "📊 Analytics",
+    "💰 Optimizer",
+    "🧠 Explainability"
+])
+
+
+# ===================================
+# Analytics Tab
+# ===================================
+with analytics_tab:
+
+    st.subheader("📈 Historical Sales Trend")
+
+    sales_fig = px.line(
+        df,
+        x="Date",
+        y="Sales",
+        title="Sales Over Time"
     )
 
-with col2:
-    st.metric(
-        "Average Sales",
-        avg_sales
-    )
-
-with col3:
-    st.metric(
-        "Average TV Spend",
-        avg_tv
-    )
-
-with col4:
-    st.metric(
-        "Average Social Spend",
-        avg_social
+    st.plotly_chart(
+        sales_fig,
+        use_container_width=True
     )
 
 
-# -----------------------------------
-# Sales Trend Chart
-# -----------------------------------
-st.subheader("📊 Historical Sales Trend")
+    st.subheader("📢 Advertising Channel Spend")
 
-sales_fig = px.line(
-    df,
-    x="Date",
-    y="Sales",
-    title="Sales Over Time"
-)
+    spend_df = df[[
+        "TV",
+        "Social",
+        "Newspaper"
+    ]].mean().reset_index()
 
-st.plotly_chart(
-    sales_fig,
-    use_container_width=True
-)
+    spend_df.columns = [
+        "Channel",
+        "Average Spend"
+    ]
 
+    spend_fig = px.bar(
+        spend_df,
+        x="Channel",
+        y="Average Spend",
+        title="Average Channel Spend"
+    )
 
-# -----------------------------------
-# Channel Spend Analysis
-# -----------------------------------
-st.subheader("📢 Advertising Channel Spend")
-
-spend_df = df[["TV", "Social", "Newspaper"]].mean().reset_index()
-spend_df.columns = ["Channel", "Average Spend"]
-
-channel_fig = px.bar(
-    spend_df,
-    x="Channel",
-    y="Average Spend",
-    title="Average Spend by Channel"
-)
-
-st.plotly_chart(
-    channel_fig,
-    use_container_width=True
-)
+    st.plotly_chart(
+        spend_fig,
+        use_container_width=True
+    )
 
 
-# -----------------------------------
-# Budget Optimizer Section
-# -----------------------------------
-st.subheader("💰 Budget Allocation Optimizer")
+# ===================================
+# Optimizer Tab
+# ===================================
+with optimizer_tab:
 
-allocation = optimize_budget(budget)
+    st.subheader("💰 Budget Allocation Optimizer")
 
-marginal_roi = calculate_marginal_roi(
-    allocation
-)
+    allocation = optimize_budget(
+        budget
+    )
 
-opt_col1, opt_col2, opt_col3, opt_col4 = st.columns(4)
+    marginal_roi = calculate_marginal_roi(
+        allocation
+    )
 
-with opt_col1:
-    st.metric(
-        "TV Allocation",
+    opt1, opt2, opt3, opt4 = st.columns(4)
+
+    opt1.metric(
+        "📺 TV",
         f"₹{allocation['TV']}"
     )
 
-with opt_col2:
-    st.metric(
-        "Social Allocation",
+    opt2.metric(
+        "📱 Social",
         f"₹{allocation['Social']}"
     )
 
-with opt_col3:
-    st.metric(
-        "Newspaper Allocation",
+    opt3.metric(
+        "📰 Newspaper",
         f"₹{allocation['Newspaper']}"
     )
 
-with opt_col4:
-    st.metric(
-        "Predicted Sales",
+    opt4.metric(
+        "📈 Predicted Sales",
         allocation['Predicted_Sales']
     )
 
 
-# -----------------------------------
-# Marginal ROI Display
-# -----------------------------------
-st.info(
-    f"💡 Marginal ROI: {marginal_roi}"
-)
-
-
-# -----------------------------------
-# Allocation Pie Chart
-# -----------------------------------
-allocation_df = pd.DataFrame({
-    "Channel": [
-        "TV",
-        "Social",
-        "Newspaper"
-    ],
-    "Spend": [
-        allocation["TV"],
-        allocation["Social"],
-        allocation["Newspaper"]
-    ]
-})
-
-pie_fig = px.pie(
-    allocation_df,
-    names="Channel",
-    values="Spend",
-    title="Optimal Budget Allocation"
-)
-
-st.plotly_chart(
-    pie_fig,
-    use_container_width=True
-)
-
-
-# -----------------------------------
-# SHAP Explainability Images
-# -----------------------------------
-st.subheader("🧠 Explainable AI Insights")
-
-exp_col1, exp_col2 = st.columns(2)
-
-with exp_col1:
-    st.image(
-        "reports/shap_summary.png",
-        caption="SHAP Feature Importance"
-    )
-
-with exp_col2:
-    st.image(
-        "reports/shap_waterfall.png",
-        caption="SHAP Waterfall Explanation"
+    st.success(
+        f"💡 Marginal ROI: {marginal_roi}"
     )
 
 
-# -----------------------------------
-# MLflow Information
-# -----------------------------------
-st.subheader("🧪 ML Experiment Tracking")
+    allocation_df = pd.DataFrame({
+        "Channel": [
+            "TV",
+            "Social",
+            "Newspaper"
+        ],
+        "Spend": [
+            allocation["TV"],
+            allocation["Social"],
+            allocation["Newspaper"]
+        ]
+    })
 
-st.markdown(
-    """
-This project uses MLflow for:
-- Experiment Tracking
-- Metric Logging
-- Model Versioning
-- Reproducibility
-"""
-)
+    pie_fig = px.pie(
+        allocation_df,
+        names="Channel",
+        values="Spend",
+        title="Optimal Budget Allocation"
+    )
+
+    st.plotly_chart(
+        pie_fig,
+        use_container_width=True
+    )
+
+
+# ===================================
+# Explainability Tab
+# ===================================
+with explain_tab:
+
+    st.subheader("🧠 Explainable AI")
+
+    exp1, exp2 = st.columns(2)
+
+    with exp1:
+        st.image(
+            "reports/shap_summary.png",
+            caption="SHAP Feature Importance"
+        )
+
+    with exp2:
+        st.image(
+            "reports/shap_waterfall.png",
+            caption="SHAP Waterfall Analysis"
+        )
+
+
+    st.info(
+        "SHAP values explain how each feature contributes to the final prediction."
+    )
 
 
 # -----------------------------------
-# Raw Data Section
+# Raw Dataset
 # -----------------------------------
 if show_raw_data:
 
-    st.subheader("🗂️ Raw Dataset Preview")
+    st.subheader("🗂️ Dataset Preview")
 
     st.dataframe(
         df.head(50),
@@ -297,4 +406,3 @@ st.markdown("---")
 st.caption(
     "Built with Streamlit, Scikit-learn, MLflow, SHAP, Plotly & Scipy"
 )
-
