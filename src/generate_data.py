@@ -43,7 +43,7 @@ def saturation(x, alpha=0.01):
 # Main Data Generator
 # -------------------------------
 def generate_data(
-    rows=5000,
+    rows=10000,
     social_effect=0.55
 ):
 
@@ -82,13 +82,13 @@ def generate_data(
         size=rows
     )
 
-    df["Social"] = np.random.uniform(
+    df["Instagram"] = np.random.uniform(
         10,
         200,
         size=rows
     )
 
-    df["Newspaper"] = np.random.exponential(
+    df["TikTok"] = np.random.exponential(
         scale=30,
         size=rows
     )
@@ -109,34 +109,34 @@ def generate_data(
     # -----------------------
     # Adstock Effects
     # -----------------------
-    tv_adstock = adstock(
-        df["TV"].values,
+    yt_adstock = adstock(
+        df["YouTube"].values,
         decay=0.6
     )
 
-    social_adstock = adstock(
-        df["Social"].values,
+    insta_adstock = adstock(
+        df["Instagram"].values,
         decay=0.4
     )
 
-    news_adstock = adstock(
-        df["Newspaper"].values,
+    x_adstock = adstock(
+        df["Twitter"].values,
         decay=0.2
     )
 
     # -----------------------
     # Saturation Effects
     # -----------------------
-    tv_effect = (
-        8 * saturation(tv_adstock)
+    yt_effect = (
+        8 * saturation(yt_adstock)
     )
 
-    social_effects = (
-        100 * saturation(social_adstock)
+    insta_effects = (
+        100 * saturation(insta_adstock)
     )
 
-    news_effect = (
-        4 * saturation(news_adstock)
+    x_effect = (
+        4 * saturation(x_adstock)
     )
 
     # -----------------------
@@ -144,8 +144,8 @@ def generate_data(
     # -----------------------
     interaction = (
         0.0001
-        * df["TV"]
-        * df["Social"]
+        * df["YouTube"]
+        * df["Instagram"]
     )
 
     # -----------------------
@@ -160,11 +160,11 @@ def generate_data(
     # -----------------------
     # Final Sales Equation
     # -----------------------
-    df["Sales"] = (
+    df["Engagement_Score"] = (
         50
-        + tv_effect
-        + social_effects
-        + news_effect
+        + yt_effect
+        + insta_effects
+        + x_effect
         + interaction
         + seasonality
         + trend
