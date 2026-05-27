@@ -205,47 +205,47 @@ Built using:
 # -----------------------------------
 # KPI Metrics
 # -----------------------------------
-latest_sales = round(
-    df["Sales"].iloc[-1]
+latest_engagement = round(
+    df["Engagement_Score"].iloc[-1]
     * scenario_multiplier,
     2
 )
 
-avg_sales = round(
-    df["Sales"].mean(),
+avg_engagement = round(
+    df["Engagement_Score"].mean(),
     2
 )
 
-avg_tv = round(
-    df["TV"].mean(),
+avg_yt = round(
+    df["YouTube"].mean(),
     2
 )
 
-avg_social = round(
-    df["Social"].mean(),
+avg_insta = round(
+    df["Instagram"].mean(),
     2
 )
 
 metric1, metric2, metric3, metric4 = st.columns(4)
 
 metric1.metric(
-    "📈 Latest Sales",
-    latest_sales
+    "📈 Latest Engagement",
+    latest_engagement
 )
 
 metric2.metric(
-    "💰 Avg Sales",
-    avg_sales
+    "💰 Avg Engagement",
+    avg_engagement
 )
 
 metric3.metric(
-    "📺 Avg TV Spend",
-    avg_tv
+    "📺 Avg YouTube Engagement",
+    avg_yt
 )
 
 metric4.metric(
-    "📱 Avg Social Spend",
-    avg_social
+    "📱 Avg Instagram Engagement",
+    avg_insta
 )
 
 
@@ -264,13 +264,13 @@ analytics_tab, optimizer_tab, explain_tab = st.tabs([
 # ===================================
 with analytics_tab:
 
-    st.subheader("📈 Historical Sales Trend")
+    st.subheader("📈 Historical Engagement Trend")
 
     sales_fig = px.line(
         df,
         x="Date",
-        y="Sales",
-        title="Sales Over Time"
+        y="Engagement_Score",
+        title="Engagement Over Time"
     )
 
     st.plotly_chart(
@@ -279,24 +279,24 @@ with analytics_tab:
     )
 
 
-    st.subheader("📢 Advertising Channel Spend")
+    st.subheader("📱 Creator Platform Budget Distribution")
 
     spend_df = df[[
-        "TV",
-        "Social",
-        "Newspaper"
+        "YouTube",
+        "Instagram",
+        "Twitter"
     ]].mean().reset_index()
 
     spend_df.columns = [
-        "Channel",
+        "Platform",
         "Average Spend"
     ]
 
     spend_fig = px.bar(
         spend_df,
-        x="Channel",
+        x="Platform",
         y="Average Spend",
-        title="Average Channel Spend"
+        title="Average Platform Spend"
     )
 
     st.plotly_chart(
@@ -325,18 +325,18 @@ with optimizer_tab:
     opt1, opt2, opt3, opt4 = st.columns(4)
 
     opt1.metric(
-        "📺 TV",
-        f"₹{allocation['TV']}"
+        "📺 YouTube",
+        f"₹{allocation['YouTube']}"
     )
 
     opt2.metric(
         "📱 Social",
-        f"₹{allocation['Social']}"
+        f"₹{allocation['YouTube']}"
     )
 
     opt3.metric(
-        "📰 Newspaper",
-        f"₹{allocation['Newspaper']}"
+        "📰 Twitter",
+        f"₹{allocation['Twitter']}"
     )
 
     opt4.metric(
@@ -351,21 +351,21 @@ with optimizer_tab:
 
 
     allocation_df = pd.DataFrame({
-        "Channel": [
-            "TV",
-            "Social",
-            "Newspaper"
+        "Platform": [
+            "YouTube",
+            "Instagram",
+            "Twitter"
         ],
         "Spend": [
-            allocation["TV"],
-            allocation["Social"],
-            allocation["Newspaper"]
+            allocation["YouTube"],
+            allocation["Instagram"],
+            allocation["Twitter"]
         ]
     })
 
     pie_fig = px.pie(
         allocation_df,
-        names="Channel",
+        names="Platform",
         values="Spend",
         title="Optimal Budget Allocation"
     )

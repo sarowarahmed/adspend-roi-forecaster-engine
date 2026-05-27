@@ -32,22 +32,22 @@ def feature_target_split(df):
     df = engineer_features(df)
 
     feature_cols = [
-        "TV",
-        "Social",
-        "Newspaper",
+        "YouTube",
+        "Instagram",
+        "Twitter",
 
-        "TV_Adstock",
-        "Social_Adstock",
-        "News_Adstock",
+        "yt_Adstock",
+        "insta_Adstock",
+        "x_Adstock",
 
-        "TV_Social_Interaction",
+        "yt_insta_Interaction",
 
         "Month",
         "Time_Index"
     ]
 
     X = df[feature_cols]
-    y = df["Sales"]
+    y = df["Engagement_Score"]
 
     return X, y, feature_cols
 

@@ -38,7 +38,7 @@ def engineer_features(df):
 
 
     # Interaction Feature
-    df["TV_Social_Interaction"] = (
+    df["yt_insta_Interaction"] = (
         df["YouTube"] * df["Instagram"]
     )
 

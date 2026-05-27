@@ -88,10 +88,10 @@ uploaded_file = st.file_uploader(
 # -----------------------------------
 required_columns = [
     "Date",
-    "TV",
-    "Social",
-    "Newspaper",
-    "Sales"
+    "YouTube",
+    "Instagram",
+    "Twitter",
+    "Engagement_Score"
 ]
 
 
@@ -105,7 +105,7 @@ base_feature_df = engineer_features(
 )
 
 X_base = base_feature_df[feature_cols]
-y_base = base_feature_df["Sales"]
+y_base = base_feature_df["Engagement_Score"]
 
 base_preds = ridge_pipeline.predict(X_base)
 

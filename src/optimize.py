@@ -25,15 +25,15 @@ feature_cols = metadata["feature_names"]
 # -------------------------------
 # Build Feature Row
 # -------------------------------
-def build_feature_row(tv, social, newspaper):
+def build_feature_row(youtube, instagram, twitter):
 
     import pandas as pd
 
     df = pd.DataFrame({
-        "Date": [pd.Timestamp("2024-01-01")],
-        "TV": [tv],
-        "Social": [social],
-        "Newspaper": [newspaper]
+        "Date": [pd.Timestamp("2026-01-01")],
+        "YouTube": [youtube],
+        "Instagram": [instagram],
+        "Twitter": [twitter]
     })
 
     df = engineer_features(df)
@@ -49,12 +49,12 @@ def build_feature_row(tv, social, newspaper):
 # -------------------------------
 def objective(spends):
 
-    tv, social, newspaper = spends
+    youtube, instagram, twitter = spends
 
     X = build_feature_row(
-        tv,
-        social,
-        newspaper
+        youtube,
+        instagram,
+        twitter
     )
 
     prediction = ridge_model.predict(X)[0]
@@ -118,15 +118,15 @@ def optimize_budget(total_budget):
         method="SLSQP"
     )
 
-    optimal_tv = result.x[0]
-    optimal_social = result.x[1]
-    optimal_newspaper = result.x[2]
+    optimal_youtube = result.x[0]
+    optimal_instagram = result.x[1]
+    optimal_twitter = result.x[2]
 
     # Final Prediction
     optimal_features = build_feature_row(
-        optimal_tv,
-        optimal_social,
-        optimal_newspaper
+        optimal_youtube,
+        optimal_instagram,
+        optimal_twitter
     )
 
     predicted_sales = ridge_model.predict(
@@ -134,9 +134,9 @@ def optimize_budget(total_budget):
     )[0]
 
     return {
-        "TV": round(optimal_tv, 2),
-        "Social": round(optimal_social, 2),
-        "Newspaper": round(optimal_newspaper, 2),
+        "YouTube": round(optimal_youtube, 2),
+        "Instagram": round(optimal_instagram, 2),
+        "Twitter": round(optimal_twitter, 2),
         "Predicted_Sales": round(predicted_sales, 2)
     }
 
@@ -152,9 +152,9 @@ def calculate_marginal_roi(
     base_sales = allocation["Predicted_Sales"]
 
     updated_allocation = optimize_budget(
-        allocation["TV"]
-        + allocation["Social"]
-        + allocation["Newspaper"]
+        allocation["YouTube"]
+        + allocation["Instagram"]
+        + allocation["Twitter"]
         + increment
     )
 

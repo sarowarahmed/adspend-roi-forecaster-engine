@@ -87,7 +87,7 @@ feature_df = engineer_features(
 )
 
 X = feature_df[feature_cols]
-y = feature_df["Sales"]
+y = feature_df["Engagement_Score"]
 
 
 # -----------------------------------
@@ -138,7 +138,7 @@ with col3:
 # -----------------------------------
 # Predicted vs Actual
 # -----------------------------------
-st.subheader("📈 Predicted vs Actual Sales")
+st.subheader("📈 Predicted vs Actual Budget Distribution")
 
 comparison_df = pd.DataFrame({
     "Actual": y,
@@ -203,20 +203,20 @@ st.plotly_chart(
 # -----------------------------------
 st.subheader("🧪 Data Quality Checks")
 
-sample_tv = st.number_input(
-    "Enter TV Spend",
+sample_yt = st.number_input(
+    "Enter YouTube Spend",
     min_value=0.0,
     value=100.0
 )
 
-sample_social = st.number_input(
-    "Enter Social Spend",
+sample_insta = st.number_input(
+    "Enter Instagram Spend",
     min_value=0.0,
     value=120.0
 )
 
-sample_news = st.number_input(
-    "Enter Newspaper Spend",
+sample_twitter = st.number_input(
+    "Enter Twitter Spend",
     min_value=0.0,
     value=30.0
 )
@@ -226,13 +226,13 @@ sample_news = st.number_input(
 # -----------------------------------
 outlier_detected = False
 
-if sample_tv > df["TV"].quantile(0.99):
+if sample_yt > df["YouTube"].quantile(0.99):
     outlier_detected = True
 
-if sample_social > df["Social"].quantile(0.99):
+if sample_insta > df["Instagram"].quantile(0.99):
     outlier_detected = True
 
-if sample_news > df["Newspaper"].quantile(0.99):
+if sample_twitter > df["Twitter"].quantile(0.99):
     outlier_detected = True
 
 
@@ -285,7 +285,7 @@ st.subheader("🔍 Feature Drift Analysis")
 
 feature_choice = st.selectbox(
     "Select Feature",
-    ["TV", "Social", "Newspaper"]
+    ["YouTube", "Instagram", "Twitter"]
 )
 
 hist_fig = go.Figure()
