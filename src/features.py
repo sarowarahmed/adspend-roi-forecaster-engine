@@ -32,14 +32,14 @@ def saturation(x, alpha=0.01):
 def engineer_features(df):
 
     # Adstock Features
-    df["TV_Adstock"] = adstock(df["TV"], decay=0.6)
-    df["Social_Adstock"] = adstock(df["Social"], decay=0.4)
-    df["News_Adstock"] = adstock(df["Newspaper"], decay=0.2)
+    df["yt_Adstock"] = adstock(df["YouTube"], decay=0.6)
+    df["insta_Adstock"] = adstock(df["Instagram"], decay=0.4)
+    df["x_Adstock"] = adstock(df["Twitter"], decay=0.2)
 
 
     # Interaction Feature
     df["TV_Social_Interaction"] = (
-        df["TV"] * df["Social"]
+        df["YouTube"] * df["Instagram"]
     )
 
     # Time-Based Features
