@@ -23,9 +23,9 @@ def test_optimizer_output():
 
     allocation = optimize_budget(10000)
 
-    assert allocation["TV"] >= 0
-    assert allocation["Social"] >= 0
-    assert allocation["Newspaper"] >= 0
+    assert allocation["YouTube"] >= 0
+    assert allocation["Instagram"] >= 0
+    assert allocation["Twitter"] >= 0
 
 
 # -----------------------------------
@@ -36,9 +36,9 @@ def test_budget_constraint():
     allocation = optimize_budget(10000)
 
     total = (
-        allocation["TV"]
-        + allocation["Social"]
-        + allocation["Newspaper"]
+        allocation["YouTube"]
+        + allocation["Instagram"]
+        + allocation["Twitter"]
     )
 
     assert total <= 10000.5
