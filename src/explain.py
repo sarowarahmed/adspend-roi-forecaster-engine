@@ -1,5 +1,7 @@
 # src/explain.py
+from pathlib import Path
 
+root_dir = Path(__file__).resolve().parent.parent
 import os
 import joblib
 import shap
@@ -14,11 +16,11 @@ from src.features import engineer_features
 # Load Model + Metadata
 # -------------------------------
 xgb_pipeline = joblib.load(
-    "models/xgb_pipeline.pkl"
+    root_dir/"models/xgb_pipeline.pkl"
 )
 
 metadata = joblib.load(
-    "models/metadata.pkl"
+    root_dir/"models/metadata.pkl"
 )
 
 feature_cols = metadata["feature_names"]
@@ -28,7 +30,7 @@ feature_cols = metadata["feature_names"]
 # Load & Prepare Dataset
 # -------------------------------
 df = load_data(
-    "data/marketing_data.csv"
+    root_dir/"data/marketing_data.csv"
 )
 
 df = engineer_features(df)

@@ -1,5 +1,7 @@
 # src/optimize.py
 
+from pathlib import Path
+root_dir = Path(__file__).resolve().parent.parent
 import numpy as np
 import joblib
 
@@ -12,11 +14,11 @@ from src.features import engineer_features
 # Load Models + Metadata
 # -------------------------------
 ridge_model = joblib.load(
-    "models/ridge_pipeline.pkl"
+   root_dir/"models/ridge_pipeline.pkl"
 )
 
 metadata = joblib.load(
-    "models/metadata.pkl"
+    root_dir/"models/metadata.pkl"
 )
 
 feature_cols = metadata["feature_names"]

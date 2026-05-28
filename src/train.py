@@ -1,5 +1,7 @@
 # src/train.py
+from pathlib import Path
 
+root_dir = Path(__file__).resolve().parent.parent
 import os
 import pandas as pd
 import numpy as np
