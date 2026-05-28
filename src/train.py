@@ -6,8 +6,6 @@ import os
 import pandas as pd
 import numpy as np
 import joblib
-import mlflow
-import mlflow.sklearn
 
 from src.features import engineer_features
 
@@ -165,6 +163,9 @@ def save_metadata(feature_cols):
 # 8. Main Training Pipeline
 # -------------------------------
 def run_training(data_path):
+
+    import mlflow
+    import mlflow.sklearn
 
     df = load_data(data_path)
 

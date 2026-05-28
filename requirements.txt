@@ -8,7 +8,6 @@ matplotlib
 scipy
 faker
 joblib
-mlflow
 shap
 pytest
 LinearRegression

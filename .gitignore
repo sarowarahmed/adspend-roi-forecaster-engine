@@ -13,7 +13,7 @@ env/
 mlruns/
 
 # Model Artifacts
-models/*.pkl
+# models/*.pkl
 
 # Jupyter
 .ipynb_checkpoints/
